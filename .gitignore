@@ -1,0 +1,9 @@
+.DS_Store
+.env
+.env.*
+secrets.json
+config.local.json
+*.pem
+*.key
+*.p12
+*.mobileprovision
