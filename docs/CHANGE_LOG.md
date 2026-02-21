@@ -8,7 +8,7 @@
 - 요약: 프로젝트 운영 규칙 v2를 저장소 문서/설정에 반영
 - 변경 파일: `.gitignore`, `SPEC.md`, `docs/CHANGE_LOG.md`
 - 검증 결과: 파일 생성 및 규칙 반영 여부 확인 완료
-- 리스크/후속 작업: 원격 저장소 `origin` 연결 후 초기 커밋/푸시 진행 필요
+- 리스크/후속 작업: `origin` 연결 완료, `git@github.com` SSH 공개키 권한 등록 후 푸시 필요
 
 ## 기록 템플릿
 - 일시: YYYY-MM-DD HH:mm TZ
