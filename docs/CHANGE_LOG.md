@@ -2,6 +2,14 @@
 
 이 문서는 최신 변경 내역이 상단에 오도록 유지한다.
 
+## 2026-02-21 21:59 KST
+- 일시: 2026-02-21 21:59 KST
+- 유형: docs
+- 요약: 운영 규칙을 문서 역할별로 분리(`AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`)하고 `SPEC.md`를 제품 스펙 중심으로 정리
+- 변경 파일: `SPEC.md`, `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/CHANGE_LOG.md`
+- 검증 결과: 문서 생성/갱신 후 역할 분리 및 참조 경로 확인 완료
+- 리스크/후속 작업: 추후 릴리스 체크리스트 문서가 필요하면 `docs/` 하위에 별도 추가
+
 ## 2026-02-21 21:56 KST
 - 일시: 2026-02-21 21:56 KST
 - 유형: docs
