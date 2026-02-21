@@ -2,6 +2,14 @@
 
 이 문서는 최신 변경 내역이 상단에 오도록 유지한다.
 
+## 2026-02-21 22:20 KST
+- 일시: 2026-02-21 22:20 KST
+- 유형: feat
+- 요약: `SPEC.md` 기반으로 macOS 메뉴바 클립보드 앱 MVP(히스토리/검색/전역 단축키/붙여넣기/설정)를 SwiftUI + AppKit으로 구현
+- 변경 파일: `.gitignore`, `Package.swift`, `Sources/ClipboardApp/ClipboardApp.swift`, `Sources/ClipboardApp/App/ClipboardAppController.swift`, `Sources/ClipboardApp/Models/ClipboardItem.swift`, `Sources/ClipboardApp/Models/HotKeyPreset.swift`, `Sources/ClipboardApp/Services/ClipboardHistoryStore.swift`, `Sources/ClipboardApp/Services/ClipboardMonitor.swift`, `Sources/ClipboardApp/Services/GlobalHotKeyManager.swift`, `Sources/ClipboardApp/Services/LaunchAtLoginService.swift`, `Sources/ClipboardApp/Services/PasteService.swift`, `Sources/ClipboardApp/Services/SettingsStore.swift`, `Sources/ClipboardApp/UI/HistoryPanelController.swift`, `Sources/ClipboardApp/UI/HistoryPanelView.swift`, `Sources/ClipboardApp/UI/KeyboardEventMonitorView.swift`, `Sources/ClipboardApp/UI/MenuBarMenuView.swift`, `Sources/ClipboardApp/UI/SettingsView.swift`, `docs/CHANGE_LOG.md`
+- 검증 결과: `swift build` 성공, 전역 `xcodebuild`는 Xcode 미설치(활성 경로: CommandLineTools)로 실행 불가 확인
+- 리스크/후속 작업: 실제 배포용 서명/노터라이즈 및 `xcodebuild` 기반 CI 검증은 Xcode 설치 환경에서 추가 필요
+
 ## 2026-02-21 22:10 KST
 - 일시: 2026-02-21 22:10 KST
 - 유형: docs

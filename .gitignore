@@ -8,3 +8,4 @@ config.local.json
 *.p12
 *.mobileprovision
 docs/WOL_REMOTE_POWER_ON.md
+/.build/
