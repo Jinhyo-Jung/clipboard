@@ -7,3 +7,4 @@ config.local.json
 *.key
 *.p12
 *.mobileprovision
+docs/WOL_REMOTE_POWER_ON.md
