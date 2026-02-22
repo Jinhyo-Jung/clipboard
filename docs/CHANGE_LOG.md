@@ -2,6 +2,38 @@
 
 이 문서는 최신 변경 내역이 상단에 오도록 유지한다.
 
+## 2026-02-22 11:29 KST
+- 일시: 2026-02-22 11:29 KST
+- 유형: docs
+- 요약: README를 비개발자 우선 구조로 재작성하고 `docs/images` 스크린샷 4종을 설치/사용 섹션에 배치
+- 변경 파일: `README.md`, `docs/images/앱아이콘.png`, `docs/images/설치화면.png`, `docs/images/window.png`, `docs/images/clipboard_설정창.png`, `docs/CHANGE_LOG.md`
+- 검증 결과: 문서 링크/이미지 경로 확인 완료
+- 리스크/후속 작업: 이미지 파일명이 한글이므로 외부 자동화 연동 시 UTF-8 경로 처리 확인 필요
+
+## 2026-02-22 11:21 KST
+- 일시: 2026-02-22 11:21 KST
+- 유형: docs
+- 요약: README의 더블클릭 실행 안내에서 `.pkg`/`.app` 경로를 `dist/` 기준으로 명확화
+- 변경 파일: `README.md`, `docs/CHANGE_LOG.md`
+- 검증 결과: 문서 경로 표기 확인 완료
+- 리스크/후속 작업: 배포 스크립트 산출물 경로가 바뀌면 README 경로도 함께 갱신 필요
+
+## 2026-02-22 11:15 KST
+- 일시: 2026-02-22 11:15 KST
+- 유형: docs
+- 요약: README를 무료 사용자 배포 모드 기준으로 정리하고 더블클릭 실행 대상 파일(`.pkg`/`.app`) 안내를 명확화
+- 변경 파일: `README.md`, `docs/CHANGE_LOG.md`
+- 검증 결과: 문서 교차 확인 완료
+- 리스크/후속 작업: 향후 공식 서명/노터라이즈 배포 전환 시 README의 무료 배포 안내와 유료 배포 안내를 릴리스 태그별로 분리 권장
+
+## 2026-02-22 10:36 KST
+- 일시: 2026-02-22 10:36 KST
+- 유형: fix
+- 요약: 설정 창의 접근성 권한 요청 동작을 컨트롤러 기반으로 보강하고 시작 시 자동 실행 오류 메시지를 실행 컨텍스트별로 명확화
+- 변경 파일: `Sources/ClipboardApp/App/ClipboardAppController.swift`, `Sources/ClipboardApp/Services/LaunchAtLoginService.swift`, `Sources/ClipboardApp/UI/SettingsView.swift`, `docs/CHANGE_LOG.md`
+- 검증 결과: `swift build` 성공, `swift run ClipboardApp` 실행 스모크 테스트 성공
+- 리스크/후속 작업: 자동 실행은 실제 서명된 `/Applications` 설치본에서 최종 확인 필요
+
 ## 2026-02-22 10:25 KST
 - 일시: 2026-02-22 10:25 KST
 - 유형: feat
