@@ -20,17 +20,17 @@ The easiest way is GitHub **Releases**.
 
 1. Open the repository **Releases** tab.
 2. Download from the latest release **Assets**:
-   - `ClipboardApp-installer.pkg` (recommended)
-   - `ClipboardApp.app.zip` or `ClipboardApp.app` (if provided)
+   - `ClipboardApp-v1.1.0.pkg` (recommended)
+   - `ClipboardApp-v1.1.0.app.zip` or `ClipboardApp-v1.1.0.app` (if provided)
 
-If there is no release yet, download files directly from the `dist/` folder on branch `release/mac-clipboard-v1.0.0`.
+If there is no release yet, download files directly from the `dist/` folder on branch `release/mac-clipboard-v1.1.0`.
 
 ### 1) Files
-- Installer: `dist/ClipboardApp-installer.pkg`
-- Direct app run: `dist/ClipboardApp.app`
+- Installer: `dist/ClipboardApp-v1.1.0.pkg`
+- Direct app run: `dist/ClipboardApp-v1.1.0.app`
 
 ### 2) Recommended Install
-1. Double-click `dist/ClipboardApp-installer.pkg`
+1. Double-click `dist/ClipboardApp-v1.1.0.pkg`
 2. Run `/Applications/ClipboardApp.app`
 
 ![Installer Screen](docs/images/설치화면.png)
@@ -53,6 +53,23 @@ For free-distribution builds (without notarization), macOS may show a warning.
 - Auto-paste requires Accessibility permission.
 - Without permission, the app still copies to clipboard and users can paste manually with `⌘V`.
 
+## Troubleshooting: Auto-paste does not paste into the focused field
+
+If ClipboardApp does not paste immediately with `Enter` or double-click (but manual `⌘V` works), reset macOS permission caches and grant permissions again.
+
+1. Get the app bundle identifier:
+   ```bash
+   defaults read /Applications/ClipboardApp.app/Contents/Info CFBundleIdentifier
+   ```
+2. Reset permission caches (`<BUNDLE_ID>` = output from step 1):
+   ```bash
+   tccutil reset Accessibility <BUNDLE_ID>
+   tccutil reset AppleEvents <BUNDLE_ID>
+   ```
+3. Re-launch `ClipboardApp.app`, then re-enable:
+   - Privacy & Security > Accessibility
+   - Privacy & Security > Automation (System Events), if prompted
+
 ---
 
 ## Developer Guide
@@ -70,8 +87,8 @@ swift run ClipboardApp
 ```
 
 Artifacts:
-- `dist/ClipboardApp.app`
-- `dist/ClipboardApp-installer.pkg`
+- `dist/ClipboardApp-v1.1.0.app`
+- `dist/ClipboardApp-v1.1.0.pkg`
 
 ### Distribution Upload Source
 - Release upload files are generated under `dist/`.
@@ -85,13 +102,3 @@ Artifacts:
 ### CI Release Templates
 - `fastlane/Fastfile`
 - `.github/workflows/release.yml`
-
-## Add Images to README
-1. Put image files in `docs/images/`
-2. Reference in Markdown
-
-```md
-![Description](docs/images/filename.png)
-```
-
-3. Commit and push.
