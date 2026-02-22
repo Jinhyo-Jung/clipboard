@@ -1,95 +1,97 @@
 # ClipboardApp (macOS)
 
-macOS에서 `Ctrl + Option + V`로 클립보드 히스토리를 열고, 키보드만으로 빠르게 붙여넣기할 수 있는 앱입니다.
+[한국어 README](README.ko.md)
 
-![앱 아이콘](docs/images/앱아이콘.png)
+Keyboard-first clipboard history app for macOS. Open history with `Ctrl + Option + V`, select with keyboard, and paste instantly.
 
-## 한눈에 보기
-- 히스토리 패널 열기: `⌃⌥V`
-- 선택/이동: `↑/↓`, `⌘1..9`
-- 붙여넣기: `Enter`
-- 삭제: `⌘⌫` (전체 삭제 `⇧⌘⌫`)
-- 스크린샷 자동 반영: `⌘⇧5`로 캡처한 이미지를 자동 저장
+![App Icon](docs/images/앱아이콘.png)
 
-## 설치 및 실행 (비개발자용)
+## Quick Overview
+- Open history panel: `⌃⌥V`
+- Navigate: `↑/↓`, `⌘1..9`
+- Paste: `Enter`
+- Delete: `⌘⌫` (delete all: `⇧⌘⌫`)
+- Auto screenshot capture: stores new screenshots from `⌘⇧5`
 
-### 0) GitHub에서 배포파일 받기
-가장 쉬운 방법은 GitHub `Releases`에서 받는 것입니다.
+## Install & Run (Non-Developers)
 
-1. 저장소 상단의 `Releases` 탭 이동
-2. 최신 릴리즈의 `Assets`에서 아래 파일 다운로드
-   - `ClipboardApp-installer.pkg` (권장)
-   - `ClipboardApp.app.zip` 또는 `ClipboardApp.app` (제공 시)
+### 0) Download Release Files
+The easiest way is GitHub **Releases**.
 
-릴리즈가 아직 없으면 저장소의 `release/mac-clipboard-v1.0.0` 브랜치에서 `dist/` 폴더 파일을 직접 다운로드할 수 있습니다.
+1. Open the repository **Releases** tab.
+2. Download from the latest release **Assets**:
+   - `ClipboardApp-installer.pkg` (recommended)
+   - `ClipboardApp.app.zip` or `ClipboardApp.app` (if provided)
 
-### 1) 설치 파일
-- 더블클릭 설치 파일: `dist/ClipboardApp-installer.pkg`
-- 설치 없이 바로 실행 파일: `dist/ClipboardApp.app`
+If there is no release yet, download files directly from the `dist/` folder on branch `release/mac-clipboard-v1.0.0`.
 
-### 2) 권장 설치 방법
-1. `dist/ClipboardApp-installer.pkg` 더블클릭
-2. 설치 완료 후 `/Applications/ClipboardApp.app` 더블클릭 실행
+### 1) Files
+- Installer: `dist/ClipboardApp-installer.pkg`
+- Direct app run: `dist/ClipboardApp.app`
 
-![설치 화면](docs/images/설치화면.png)
+### 2) Recommended Install
+1. Double-click `dist/ClipboardApp-installer.pkg`
+2. Run `/Applications/ClipboardApp.app`
 
-### 3) 최초 실행 시 경고가 뜨는 경우
-무료 배포본(미노터라이즈)은 macOS 경고가 뜰 수 있습니다.
+![Installer Screen](docs/images/설치화면.png)
 
-1. Finder에서 앱 우클릭 → `열기`
-2. 시스템 설정 > 개인정보 보호 및 보안에서 실행 허용
+### 3) If macOS Blocks the App
+For free-distribution builds (without notarization), macOS may show a warning.
 
-## 사용 화면
+1. Right-click app in Finder → `Open`
+2. Allow execution in System Settings > Privacy & Security
 
-### 히스토리 패널
-![히스토리 패널](docs/images/window.png)
+## Screenshots
 
-### 설정 창
-![설정 창](docs/images/clipboard_설정창.png)
+### History Panel
+![History Panel](docs/images/window.png)
 
-## 권한 안내
-- 자동 붙여넣기를 사용하려면 `손쉬운 사용(Accessibility)` 권한이 필요합니다.
-- 권한이 없으면 클립보드 복사까지만 수행되며, 사용자가 `⌘V`로 수동 붙여넣기할 수 있습니다.
+### Settings Window
+![Settings Window](docs/images/clipboard_설정창.png)
+
+## Permissions
+- Auto-paste requires Accessibility permission.
+- Without permission, the app still copies to clipboard and users can paste manually with `⌘V`.
 
 ---
 
-## 개발자 가이드
+## Developer Guide
 
-### 로컬 실행
+### Run Locally
 ```bash
 cd /Users/kkongwang/Documents/clipboard
 swift run ClipboardApp
 ```
 
-### 빌드 산출물 생성
+### Build Artifacts
 ```bash
 ./scripts/build_app_bundle.sh
 ./scripts/package_installer_pkg.sh
 ```
 
-산출물:
+Artifacts:
 - `dist/ClipboardApp.app`
 - `dist/ClipboardApp-installer.pkg`
 
-### 배포파일 업로드 위치
-- `Releases`에 업로드할 원본 파일은 `dist/`에 생성됩니다.
-- 무료 사용자 배포 기준으로도 `dist/` 파일을 GitHub에서 직접 다운로드 가능하게 유지합니다.
+### Distribution Upload Source
+- Release upload files are generated under `dist/`.
+- In free mode, `dist/` files can also be downloaded directly from GitHub.
 
-### (선택) 유료 계정용 서명/노터라이즈
+### (Optional) Sign & Notarize (Paid Apple Developer Account)
 ```bash
 ./scripts/sign_and_notarize.sh
 ```
 
-### CI 릴리스 템플릿
+### CI Release Templates
 - `fastlane/Fastfile`
 - `.github/workflows/release.yml`
 
-## README 이미지 추가 방법
-1. 이미지 파일을 `docs/images/`에 추가
-2. README에 다음 형식으로 삽입
+## Add Images to README
+1. Put image files in `docs/images/`
+2. Reference in Markdown
 
 ```md
-![설명](docs/images/파일명.png)
+![Description](docs/images/filename.png)
 ```
 
-3. 커밋/푸시하면 GitHub에서 바로 표시됩니다.
+3. Commit and push.
