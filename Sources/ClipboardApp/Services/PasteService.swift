@@ -1,6 +1,7 @@
 import AppKit
 import ApplicationServices
 import Foundation
+import Darwin
 
 enum PasteResult {
     case success
@@ -9,13 +10,15 @@ enum PasteResult {
 }
 
 enum PasteService {
-    static func paste(text: String) -> PasteResult {
+    static func paste(text: String, targetApplication: NSRunningApplication?) -> PasteResult {
         copyToPasteboard(text)
 
         guard AXIsProcessTrusted() else {
             _ = requestAccessibilityPermission()
             return .accessibilityDenied
         }
+
+        activateTargetApp(targetApplication)
 
         guard emitCommandV() else {
             return .eventCreationFailed
@@ -44,6 +47,12 @@ enum PasteService {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+    }
+
+    private static func activateTargetApp(_ app: NSRunningApplication?) {
+        guard let app else { return }
+        _ = app.activate(options: [.activateIgnoringOtherApps])
+        usleep(140_000)
     }
 
     private static func emitCommandV() -> Bool {

@@ -2,6 +2,14 @@
 
 이 문서는 최신 변경 내역이 상단에 오도록 유지한다.
 
+## 2026-02-21 22:34 KST
+- 일시: 2026-02-21 22:34 KST
+- 유형: fix
+- 요약: 히스토리 패널 키보드 이동(`↑/↓`) 비동작과 붙여넣기 타깃 앱 포커스 유지 문제를 수정
+- 변경 파일: `Sources/ClipboardApp/App/ClipboardAppController.swift`, `Sources/ClipboardApp/Services/PasteService.swift`, `Sources/ClipboardApp/UI/HistoryPanelView.swift`, `docs/CHANGE_LOG.md`
+- 검증 결과: `swift build` 성공, `swift run ClipboardApp` 프로세스 기동/종료 스모크 테스트 확인
+- 리스크/후속 작업: 실제 GUI 상호작용(`↑/↓`, `Enter` 붙여넣기)은 사용자 환경에서 권한/포커스 상태에 따라 차이가 있을 수 있어 수동 확인 필요
+
 ## 2026-02-21 22:20 KST
 - 일시: 2026-02-21 22:20 KST
 - 유형: feat

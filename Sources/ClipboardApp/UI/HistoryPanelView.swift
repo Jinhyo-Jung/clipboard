@@ -86,6 +86,16 @@ struct HistoryPanelView: View {
             return true
         }
 
+        if event.keyCode == 125 { // Down
+            moveSelection(direction: 1)
+            return true
+        }
+
+        if event.keyCode == 126 { // Up
+            moveSelection(direction: -1)
+            return true
+        }
+
         if event.keyCode == 36 { // Enter
             pasteSelectedItem()
             return true
@@ -161,5 +171,20 @@ struct HistoryPanelView: View {
         DispatchQueue.main.async {
             isSearchFocused = true
         }
+    }
+
+    private func moveSelection(direction: Int) {
+        guard filteredItems.isEmpty == false else {
+            selectedID = nil
+            return
+        }
+
+        guard let currentSelectedID = selectedID, let currentIndex = filteredItems.firstIndex(where: { $0.id == currentSelectedID }) else {
+            selectedID = filteredItems[0].id
+            return
+        }
+
+        let nextIndex = max(0, min(filteredItems.count - 1, currentIndex + direction))
+        selectedID = filteredItems[nextIndex].id
     }
 }

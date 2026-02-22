@@ -1,4 +1,5 @@
 import Combine
+import AppKit
 import Foundation
 
 @MainActor
@@ -15,6 +16,7 @@ final class ClipboardAppController: ObservableObject {
     private let monitor: ClipboardMonitor
     private let hotKeyManager = GlobalHotKeyManager()
     private let panelController = HistoryPanelController()
+    private var lastFrontmostApplication: NSRunningApplication?
 
     private var cancellables: Set<AnyCancellable> = []
     private var started = false
@@ -62,6 +64,11 @@ final class ClipboardAppController: ObservableObject {
     }
 
     func openPanel() {
+        let frontmost = NSWorkspace.shared.frontmostApplication
+        if frontmost?.processIdentifier != ProcessInfo.processInfo.processIdentifier {
+            lastFrontmostApplication = frontmost
+        }
+
         panelSessionID = UUID()
         panelController.show(controller: self)
         isPanelVisible = true
@@ -77,9 +84,10 @@ final class ClipboardAppController: ObservableObject {
     }
 
     func paste(item: ClipboardItem) {
-        switch PasteService.paste(text: item.text) {
+        closePanel()
+
+        switch PasteService.paste(text: item.text, targetApplication: lastFrontmostApplication) {
         case .success:
-            closePanel()
             infoMessage = "\"\(item.preview)\" 붙여넣기 완료"
             errorMessage = nil
         case .accessibilityDenied:

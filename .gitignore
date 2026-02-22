@@ -8,4 +8,12 @@ config.local.json
 *.p12
 *.mobileprovision
 docs/WOL_REMOTE_POWER_ON.md
+docs/OPENCLAW_TELEGRAM_SETUP.md
 /.build/
+
+# OpenClaw / Telegram local secrets
+.openclaw/
+openclaw.local.json
+auth-profiles.json
+telegram.bot.token
+*.token
