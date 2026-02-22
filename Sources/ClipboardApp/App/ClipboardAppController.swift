@@ -167,6 +167,18 @@ final class ClipboardAppController: ObservableObject {
         errorMessage = nil
     }
 
+    func requestAccessibilityPermissionFromSettings() {
+        if PasteService.requestAccessibilityPermission() {
+            infoMessage = "접근성 권한이 이미 활성화되어 있습니다."
+            errorMessage = nil
+            return
+        }
+
+        PasteService.openAccessibilitySettings()
+        infoMessage = "접근성 권한 팝업이 보이지 않으면 시스템 설정 > 개인정보 보호 및 보안 > 손쉬운 사용에서 직접 허용해주세요."
+        errorMessage = nil
+    }
+
     func clearNotices() {
         infoMessage = nil
         errorMessage = nil

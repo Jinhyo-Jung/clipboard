@@ -35,7 +35,7 @@ struct SettingsView: View {
 
             HStack(spacing: 12) {
                 Button("접근성 권한 요청") {
-                    _ = PasteService.requestAccessibilityPermission()
+                    controller.requestAccessibilityPermissionFromSettings()
                 }
 
                 Button("시스템 설정 열기") {
