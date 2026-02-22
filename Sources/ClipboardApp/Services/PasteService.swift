@@ -5,13 +5,16 @@ import Darwin
 
 enum PasteResult {
     case success
+    case clipboardWriteFailed
     case accessibilityDenied
     case eventCreationFailed
 }
 
 enum PasteService {
-    static func paste(text: String, targetApplication: NSRunningApplication?) -> PasteResult {
-        copyToPasteboard(text)
+    static func paste(item: ClipboardItem, targetApplication: NSRunningApplication?) -> PasteResult {
+        guard copyToPasteboard(item: item) else {
+            return .clipboardWriteFailed
+        }
 
         guard AXIsProcessTrusted() else {
             _ = requestAccessibilityPermission()
@@ -25,6 +28,28 @@ enum PasteService {
         }
 
         return .success
+    }
+
+    @discardableResult
+    static func copyToPasteboard(item: ClipboardItem) -> Bool {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+
+        switch item.kind {
+        case .text:
+            guard let text = item.text else { return false }
+            return pasteboard.setString(text, forType: .string)
+        case .image:
+            guard let pngData = item.imagePNGData else { return false }
+            return pasteboard.setData(pngData, forType: .png)
+        }
+    }
+
+    @discardableResult
+    static func copyImageToPasteboard(pngData: Data) -> Bool {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        return pasteboard.setData(pngData, forType: .png)
     }
 
     static func requestAccessibilityPermission() -> Bool {
@@ -41,12 +66,6 @@ enum PasteService {
         }
 
         NSWorkspace.shared.open(url)
-    }
-
-    private static func copyToPasteboard(_ text: String) {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(text, forType: .string)
     }
 
     private static func activateTargetApp(_ app: NSRunningApplication?) {

@@ -1,0 +1,14 @@
+default_platform(:mac)
+
+platform :mac do
+  desc "Build app bundle and installer package"
+  lane :build_release do
+    sh("./scripts/build_app_bundle.sh")
+    sh("./scripts/package_installer_pkg.sh")
+  end
+
+  desc "Sign and notarize package"
+  lane :notarize_release do
+    sh("./scripts/sign_and_notarize.sh")
+  end
+end

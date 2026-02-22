@@ -7,6 +7,7 @@ final class ClipboardMonitor {
     private let pollInterval: TimeInterval
     private let isPaused: () -> Bool
     private let onTextCaptured: (String) -> Void
+    private let onImageCaptured: (Data) -> Void
 
     private var timer: Timer?
     private var lastChangeCount: Int
@@ -15,12 +16,14 @@ final class ClipboardMonitor {
         pasteboard: NSPasteboard = .general,
         pollInterval: TimeInterval = 0.35,
         isPaused: @escaping () -> Bool,
-        onTextCaptured: @escaping (String) -> Void
+        onTextCaptured: @escaping (String) -> Void,
+        onImageCaptured: @escaping (Data) -> Void
     ) {
         self.pasteboard = pasteboard
         self.pollInterval = pollInterval
         self.isPaused = isPaused
         self.onTextCaptured = onTextCaptured
+        self.onImageCaptured = onImageCaptured
         self.lastChangeCount = pasteboard.changeCount
     }
 
@@ -52,7 +55,23 @@ final class ClipboardMonitor {
         guard currentCount != lastChangeCount else { return }
         lastChangeCount = currentCount
 
-        guard let text = pasteboard.string(forType: .string) else { return }
-        onTextCaptured(text)
+        if let text = pasteboard.string(forType: .string), text.trimmingCharacters(in: .newlines).isEmpty == false {
+            onTextCaptured(text)
+            return
+        }
+
+        if let pngData = pasteboard.data(forType: .png), pngData.isEmpty == false {
+            onImageCaptured(pngData)
+            return
+        }
+
+        if
+            let tiffData = pasteboard.data(forType: .tiff),
+            let image = NSImage(data: tiffData),
+            let pngData = image.toPNGData(),
+            pngData.isEmpty == false
+        {
+            onImageCaptured(pngData)
+        }
     }
 }

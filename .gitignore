@@ -10,6 +10,7 @@ config.local.json
 docs/WOL_REMOTE_POWER_ON.md
 docs/OPENCLAW_TELEGRAM_SETUP.md
 /.build/
+/dist/
 
 # OpenClaw / Telegram local secrets
 .openclaw/

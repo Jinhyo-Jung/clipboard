@@ -2,6 +2,30 @@
 
 이 문서는 최신 변경 내역이 상단에 오도록 유지한다.
 
+## 2026-02-22 10:25 KST
+- 일시: 2026-02-22 10:25 KST
+- 유형: feat
+- 요약: 더블클릭 설치용 `.app`/`.pkg` 배포 스크립트, 서명/노터라이즈 자동화 스크립트, README(설치/배포/이미지 업로드 가이드) 및 fastlane/GitHub Actions 릴리스 템플릿 추가
+- 변경 파일: `.gitignore`, `README.md`, `SPEC.md`, `fastlane/Fastfile`, `.github/workflows/release.yml`, `scripts/build_app_bundle.sh`, `scripts/package_installer_pkg.sh`, `scripts/sign_and_notarize.sh`, `Sources/ClipboardApp/App/ClipboardAppController.swift`, `Sources/ClipboardApp/Models/ClipboardItem.swift`, `Sources/ClipboardApp/Services/ClipboardHistoryStore.swift`, `Sources/ClipboardApp/Services/ClipboardMonitor.swift`, `Sources/ClipboardApp/Services/ImageConversion.swift`, `Sources/ClipboardApp/Services/PasteService.swift`, `Sources/ClipboardApp/Services/ScreenshotMonitor.swift`, `Sources/ClipboardApp/Services/SettingsStore.swift`, `Sources/ClipboardApp/UI/HistoryPanelView.swift`, `Sources/ClipboardApp/UI/MenuBarMenuView.swift`, `Sources/ClipboardApp/UI/SettingsView.swift`, `Sources/ClipboardApp/UI/SettingsWindowController.swift`, `docs/CHANGE_LOG.md`, `docs/images/.gitkeep`
+- 검증 결과: `swift build` 성공, `scripts/build_app_bundle.sh` 성공, `scripts/package_installer_pkg.sh` 성공, 서명 점검 스크립트 실행(`notarytool` 사용 가능 확인)
+- 리스크/후속 작업: 현재 로컬 키체인에 Developer ID 인증서가 없어 공식 서명/노터라이즈는 미완료 상태이며 인증서/Apple 자격정보 주입 후 `scripts/sign_and_notarize.sh` 실행 필요
+
+## 2026-02-22 10:07 KST
+- 일시: 2026-02-22 10:07 KST
+- 유형: feat
+- 요약: `⌘⇧5` 스크린샷 결과를 자동으로 감지해 이미지 클립 히스토리 및 시스템 클립보드에 저장하는 기능 추가
+- 변경 파일: `SPEC.md`, `Sources/ClipboardApp/App/ClipboardAppController.swift`, `Sources/ClipboardApp/Models/ClipboardItem.swift`, `Sources/ClipboardApp/Services/ClipboardHistoryStore.swift`, `Sources/ClipboardApp/Services/ClipboardMonitor.swift`, `Sources/ClipboardApp/Services/ImageConversion.swift`, `Sources/ClipboardApp/Services/PasteService.swift`, `Sources/ClipboardApp/Services/ScreenshotMonitor.swift`, `Sources/ClipboardApp/Services/SettingsStore.swift`, `Sources/ClipboardApp/UI/HistoryPanelView.swift`, `Sources/ClipboardApp/UI/MenuBarMenuView.swift`, `Sources/ClipboardApp/UI/SettingsView.swift`, `docs/CHANGE_LOG.md`
+- 검증 결과: `swift build` 성공, `swift run ClipboardApp` 실행 스모크 테스트 성공
+- 리스크/후속 작업: 스크린샷 저장 경로가 Desktop이 아닐 경우 자동 감지 범위를 사용자 지정 경로로 확장 필요
+
+## 2026-02-22 09:57 KST
+- 일시: 2026-02-22 09:57 KST
+- 유형: fix
+- 요약: 메뉴바의 설정 열기 동작을 전용 설정 윈도우로 교체하고 히스토리 패널의 기본 상단 노출/선택-스크롤 동기화를 개선
+- 변경 파일: `Sources/ClipboardApp/App/ClipboardAppController.swift`, `Sources/ClipboardApp/UI/HistoryPanelView.swift`, `Sources/ClipboardApp/UI/MenuBarMenuView.swift`, `Sources/ClipboardApp/UI/SettingsWindowController.swift`, `docs/CHANGE_LOG.md`
+- 검증 결과: `swift build` 성공, `swift run ClipboardApp` 실행 스모크 테스트 성공
+- 리스크/후속 작업: 항목 수가 매우 많을 때 애니메이션 스크롤 빈도 최적화 검토 필요
+
 ## 2026-02-21 22:34 KST
 - 일시: 2026-02-21 22:34 KST
 - 유형: fix

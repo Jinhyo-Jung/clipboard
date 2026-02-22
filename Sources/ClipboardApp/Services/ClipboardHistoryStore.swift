@@ -1,4 +1,5 @@
 import Combine
+import CryptoKit
 import Foundation
 
 @MainActor
@@ -18,11 +19,23 @@ final class ClipboardHistoryStore: ObservableObject {
         let normalized = text.trimmingCharacters(in: .newlines)
         guard normalized.isEmpty == false else { return }
 
-        if let existingIndex = items.firstIndex(where: { $0.text == text }) {
+        if let existingIndex = items.firstIndex(where: { $0.kind == .text && $0.text == text }) {
             items.remove(at: existingIndex)
         }
 
-        items.insert(ClipboardItem(text: text), at: 0)
+        items.insert(.text(text), at: 0)
+        enforceLimit(maxItems)
+        persist()
+    }
+
+    func capture(imagePNGData: Data, sourceLabel: String?, maxItems: Int) {
+        let signature = sha256Hex(imagePNGData)
+
+        if let existingIndex = items.firstIndex(where: { $0.kind == .image && $0.imageSignature == signature }) {
+            items.remove(at: existingIndex)
+        }
+
+        items.insert(.image(pngData: imagePNGData, signature: signature, sourceLabel: sourceLabel), at: 0)
         enforceLimit(maxItems)
         persist()
     }
@@ -56,9 +69,7 @@ final class ClipboardHistoryStore: ObservableObject {
             return items
         }
 
-        return items.filter {
-            $0.text.localizedCaseInsensitiveContains(trimmed)
-        }
+        return items.filter { $0.matches(query: query) }
     }
 
     private func load() {
@@ -85,6 +96,10 @@ final class ClipboardHistoryStore: ObservableObject {
         } catch {
             // 로컬 영속화 실패는 런타임 동작에 영향을 주지 않도록 무시한다.
         }
+    }
+
+    private func sha256Hex(_ data: Data) -> String {
+        SHA256.hash(data: data).compactMap { String(format: "%02x", $0) }.joined()
     }
 
     private static func defaultStorageURL() -> URL? {

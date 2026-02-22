@@ -31,6 +31,7 @@ struct SettingsView: View {
 
             Toggle("클립 기록 일시 중지", isOn: pausedBinding)
             Toggle("시작 시 자동 실행", isOn: launchAtLoginBinding)
+            Toggle("스크린샷 자동 클립보드 저장 (⌘⇧5)", isOn: screenshotCaptureBinding)
 
             HStack(spacing: 12) {
                 Button("접근성 권한 요청") {
@@ -57,7 +58,7 @@ struct SettingsView: View {
             Spacer()
         }
         .padding(20)
-        .frame(width: 500, height: 320)
+        .frame(width: 540, height: 360)
     }
 
     private var maxItemsBinding: Binding<Int> {
@@ -85,6 +86,13 @@ struct SettingsView: View {
         Binding(
             get: { controller.settings.launchAtLogin },
             set: { controller.setLaunchAtLogin($0) }
+        )
+    }
+
+    private var screenshotCaptureBinding: Binding<Bool> {
+        Binding(
+            get: { controller.settings.autoCaptureScreenshotToClipboard },
+            set: { controller.setAutoCaptureScreenshotToClipboard($0) }
         )
     }
 }

@@ -1,0 +1,45 @@
+name: macOS Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build app bundle
+        run: ./scripts/build_app_bundle.sh
+
+      - name: Build installer pkg
+        run: ./scripts/package_installer_pkg.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: clipboard-release-artifacts
+          path: |
+            dist/ClipboardApp.app
+            dist/ClipboardApp-installer.pkg
+
+  notarize:
+    needs: build
+    if: ${{ secrets.APP_SIGN_IDENTITY != '' && secrets.APPLE_ID != '' }}
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build app bundle
+        run: ./scripts/build_app_bundle.sh
+
+      - name: Sign and notarize
+        env:
+          APP_SIGN_IDENTITY: ${{ secrets.APP_SIGN_IDENTITY }}
+          INSTALLER_SIGN_IDENTITY: ${{ secrets.INSTALLER_SIGN_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: ./scripts/sign_and_notarize.sh

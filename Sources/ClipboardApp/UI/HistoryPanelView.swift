@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct HistoryPanelView: View {
@@ -14,71 +15,87 @@ struct HistoryPanelView: View {
     }
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
-                TextField("클립보드 검색", text: $query)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($isSearchFocused)
-                    .onSubmit {
-                        pasteSelectedItem()
-                    }
-            }
-
-            List(selection: $selectedID) {
-                ForEach(filteredItems) { item in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.preview)
-                            .lineLimit(2)
-                        Text(item.copiedAt, style: .time)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .tag(item.id)
+        ScrollViewReader { proxy in
+            VStack(spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    TextField("클립보드 검색", text: $query)
+                        .textFieldStyle(.roundedBorder)
+                        .focused($isSearchFocused)
+                        .onSubmit {
+                            pasteSelectedItem()
+                        }
                 }
-            }
-            .listStyle(.plain)
 
-            HStack {
-                Text("저장 \(controller.items.count)개 / 최대 \(controller.settings.maxItems)개")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                ScrollView {
+                    LazyVStack(spacing: 6) {
+                        ForEach(filteredItems) { item in
+                            Button {
+                                selectedID = item.id
+                            } label: {
+                                rowContent(for: item)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
+                                .background(rowBackground(for: item.id))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                            .buttonStyle(.plain)
+                            .id(item.id)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .background(Color(nsColor: .textBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                Spacer()
-
-                if controller.settings.isCapturePaused {
-                    Label("기록 일시 중지", systemImage: "pause.fill")
+                HStack {
+                    Text("저장 \(controller.items.count)개 / 최대 \(controller.settings.maxItems)개")
                         .font(.caption)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    if controller.settings.isCapturePaused {
+                        Label("기록 일시 중지", systemImage: "pause.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
                 }
             }
-        }
-        .padding(16)
-        .frame(minWidth: 620, minHeight: 420)
-        .background(
-            KeyboardEventMonitorView(onKeyDown: handleKeyDown)
-                .frame(width: 0, height: 0)
-        )
-        .onAppear {
-            selectFirstIfNeeded()
-            focusSearchFieldSoon()
-        }
-        .onChange(of: sessionID) { _ in
-            query = ""
-            selectedID = nil
-            selectFirstIfNeeded()
-            focusSearchFieldSoon()
-        }
-        .onChange(of: query) { _ in
-            selectFirstIfNeeded()
-        }
-        .onChange(of: filteredItems.map(\.id)) { _ in
-            selectFirstIfNeeded()
+            .padding(16)
+            .frame(minWidth: 620, minHeight: 420)
+            .background(
+                KeyboardEventMonitorView(onKeyDown: { handleKeyDown($0, proxy: proxy) })
+                    .frame(width: 0, height: 0)
+            )
+            .onAppear {
+                selectFirstIfNeeded()
+                scrollToSelection(proxy, anchor: .top)
+                focusSearchFieldSoon()
+            }
+            .onChange(of: sessionID) { _ in
+                query = ""
+                selectedID = nil
+                selectFirstIfNeeded()
+                scrollToSelection(proxy, anchor: .top)
+                focusSearchFieldSoon()
+            }
+            .onChange(of: query) { _ in
+                selectFirstIfNeeded()
+                scrollToSelection(proxy, anchor: .top)
+            }
+            .onChange(of: filteredItems.map(\.id)) { _ in
+                selectFirstIfNeeded()
+                scrollToSelection(proxy, anchor: .top)
+            }
+            .onChange(of: selectedID) { _ in
+                scrollToSelection(proxy, anchor: .center)
+            }
         }
     }
 
-    private func handleKeyDown(_ event: NSEvent) -> Bool {
+    private func handleKeyDown(_ event: NSEvent, proxy: ScrollViewProxy) -> Bool {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
         if event.keyCode == 53 { // Esc
@@ -87,12 +104,12 @@ struct HistoryPanelView: View {
         }
 
         if event.keyCode == 125 { // Down
-            moveSelection(direction: 1)
+            moveSelection(direction: 1, proxy: proxy)
             return true
         }
 
         if event.keyCode == 126 { // Up
-            moveSelection(direction: -1)
+            moveSelection(direction: -1, proxy: proxy)
             return true
         }
 
@@ -111,6 +128,7 @@ struct HistoryPanelView: View {
             guard let selectedID else { return true }
             controller.delete(itemID: selectedID)
             selectFirstIfNeeded()
+            scrollToSelection(proxy, anchor: .top)
             return true
         }
 
@@ -118,6 +136,7 @@ struct HistoryPanelView: View {
             guard filteredItems.indices.contains(index) else { return true }
             let item = filteredItems[index]
             selectedID = item.id
+            scrollToSelection(proxy, anchor: .center)
             controller.paste(item: item)
             return true
         }
@@ -173,7 +192,7 @@ struct HistoryPanelView: View {
         }
     }
 
-    private func moveSelection(direction: Int) {
+    private func moveSelection(direction: Int, proxy: ScrollViewProxy) {
         guard filteredItems.isEmpty == false else {
             selectedID = nil
             return
@@ -181,10 +200,69 @@ struct HistoryPanelView: View {
 
         guard let currentSelectedID = selectedID, let currentIndex = filteredItems.firstIndex(where: { $0.id == currentSelectedID }) else {
             selectedID = filteredItems[0].id
+            scrollToSelection(proxy, anchor: .top)
             return
         }
 
         let nextIndex = max(0, min(filteredItems.count - 1, currentIndex + direction))
         selectedID = filteredItems[nextIndex].id
+        scrollToSelection(proxy, anchor: .center)
+    }
+
+    private func scrollToSelection(_ proxy: ScrollViewProxy, anchor: UnitPoint) {
+        guard let selectedID else { return }
+
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.12)) {
+                proxy.scrollTo(selectedID, anchor: anchor)
+            }
+        }
+    }
+
+    private func rowBackground(for id: UUID) -> Color {
+        selectedID == id ? Color.accentColor.opacity(0.22) : Color(nsColor: .controlBackgroundColor)
+    }
+
+    @ViewBuilder
+    private func rowContent(for item: ClipboardItem) -> some View {
+        if item.kind == .image {
+            HStack(spacing: 10) {
+                if
+                    let imageData = item.imagePNGData,
+                    let image = NSImage(data: imageData)
+                {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 68, height: 42)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                } else {
+                    Image(systemName: "photo")
+                        .frame(width: 68, height: 42)
+                        .background(Color(nsColor: .windowBackgroundColor))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.preview)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(item.copiedAt, style: .time)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.preview)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(item.copiedAt, style: .time)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 }

@@ -14,6 +14,10 @@ struct MenuBarMenuView: View {
                 controller.setCapturePaused(!controller.settings.isCapturePaused)
             }
 
+            Button(controller.settings.autoCaptureScreenshotToClipboard ? "스크린샷 자동 저장 끄기" : "스크린샷 자동 저장 켜기") {
+                controller.setAutoCaptureScreenshotToClipboard(!controller.settings.autoCaptureScreenshotToClipboard)
+            }
+
             Menu("최대 저장 개수") {
                 ForEach(SettingsStore.allowedMaxItems, id: \.self) { itemCount in
                     Button(maxItemLabel(itemCount)) {
@@ -37,8 +41,7 @@ struct MenuBarMenuView: View {
             Divider()
 
             Button("설정 열기") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                NSApp.activate(ignoringOtherApps: true)
+                controller.openSettingsWindow()
             }
 
             Button("접근성 설정 열기") {

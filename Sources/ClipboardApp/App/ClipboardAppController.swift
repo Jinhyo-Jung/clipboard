@@ -14,8 +14,10 @@ final class ClipboardAppController: ObservableObject {
 
     private let historyStore: ClipboardHistoryStore
     private let monitor: ClipboardMonitor
+    private let screenshotMonitor: ScreenshotMonitor
     private let hotKeyManager = GlobalHotKeyManager()
     private let panelController = HistoryPanelController()
+    private let settingsWindowController = SettingsWindowController()
     private var lastFrontmostApplication: NSRunningApplication?
 
     private var cancellables: Set<AnyCancellable> = []
@@ -36,6 +38,23 @@ final class ClipboardAppController: ObservableObject {
                 Task { @MainActor in
                     historyStore.capture(text: text, maxItems: settings.maxItems)
                 }
+            },
+            onImageCaptured: { [weak historyStore, weak settings] pngData in
+                guard let historyStore, let settings else { return }
+                Task { @MainActor in
+                    historyStore.capture(imagePNGData: pngData, sourceLabel: "클립보드", maxItems: settings.maxItems)
+                }
+            }
+        )
+
+        self.screenshotMonitor = ScreenshotMonitor(
+            isEnabled: { settings.autoCaptureScreenshotToClipboard },
+            onScreenshotDetected: { [weak historyStore, weak settings] pngData in
+                guard let historyStore, let settings else { return }
+                Task { @MainActor in
+                    historyStore.capture(imagePNGData: pngData, sourceLabel: "스크린샷", maxItems: settings.maxItems)
+                    _ = PasteService.copyImageToPasteboard(pngData: pngData)
+                }
             }
         )
 
@@ -55,6 +74,7 @@ final class ClipboardAppController: ObservableObject {
         started = true
 
         monitor.start()
+        screenshotMonitor.start()
         historyStore.enforceLimit(settings.maxItems)
         applyHotKeyPreset(settings.hotKeyPreset, persist: false)
     }
@@ -86,10 +106,12 @@ final class ClipboardAppController: ObservableObject {
     func paste(item: ClipboardItem) {
         closePanel()
 
-        switch PasteService.paste(text: item.text, targetApplication: lastFrontmostApplication) {
+        switch PasteService.paste(item: item, targetApplication: lastFrontmostApplication) {
         case .success:
             infoMessage = "\"\(item.preview)\" 붙여넣기 완료"
             errorMessage = nil
+        case .clipboardWriteFailed:
+            errorMessage = "클립보드 기록을 시스템 클립보드로 복사하지 못했습니다."
         case .accessibilityDenied:
             infoMessage = "접근성 권한이 없어 자동 붙여넣기에 실패했습니다. 클립보드는 복사되었으니 ⌘V로 수동 붙여넣기 해주세요."
             errorMessage = nil
@@ -139,9 +161,19 @@ final class ClipboardAppController: ObservableObject {
         }
     }
 
+    func setAutoCaptureScreenshotToClipboard(_ enabled: Bool) {
+        settings.autoCaptureScreenshotToClipboard = enabled
+        infoMessage = enabled ? "스크린샷 자동 클립보드 저장을 활성화했습니다." : "스크린샷 자동 클립보드 저장을 비활성화했습니다."
+        errorMessage = nil
+    }
+
     func clearNotices() {
         infoMessage = nil
         errorMessage = nil
+    }
+
+    func openSettingsWindow() {
+        settingsWindowController.show(controller: self)
     }
 
     private func bindStores() {
